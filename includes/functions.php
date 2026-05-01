@@ -183,6 +183,145 @@ function getDashboardStats() {
     return $stats;
 }
 
+// ── Chart / KPI Analytics helpers ────────────────────────────────────────────
+
+/**
+ * Return the first active "general" indicator to use as the default chart KPI.
+ * Falls back to the first active indicator of any category.
+ * Returns false when no indicators exist.
+ */
+function getDefaultChartIndicator() {
+    $pdo = getDB();
+    try {
+        $stmt = $pdo->query(
+            "SELECT id, name, indicator_code, unit
+             FROM indicators
+             WHERE status = 'active'
+             ORDER BY CASE WHEN category = 'general' THEN 0 ELSE 1 END, indicator_code
+             LIMIT 1"
+        );
+        return $stmt->fetch();
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+/**
+ * Aggregate monthly values across all departments for the given indicator
+ * over the last 6 calendar months (including the current month).
+ * Returns an array of ['label' => 'Mon YYYY', 'value' => float|null].
+ */
+function getKpiTrend6Months($indicator_id) {
+    $pdo    = getDB();
+    $result = [];
+    // Build last-6-months list (oldest → newest)
+    for ($i = 5; $i >= 0; $i--) {
+        $ts    = strtotime("-$i months");
+        $m     = (int)date('n', $ts);
+        $y     = (int)date('Y', $ts);
+        $label = date('M Y', $ts);
+        $result[] = ['label' => $label, 'month' => $m, 'year' => $y, 'value' => null];
+    }
+    try {
+        $stmt = $pdo->prepare(
+            "SELECT month, year, AVG(value) as avg_value
+             FROM monthly_data
+             WHERE indicator_id = ?
+             GROUP BY year, month"
+        );
+        $stmt->execute([$indicator_id]);
+        $rows = $stmt->fetchAll();
+        $map  = [];
+        foreach ($rows as $row) {
+            $key        = sprintf('%d-%02d', $row['year'], $row['month']);
+            $map[$key] = round((float)$row['avg_value'], 4);
+        }
+        foreach ($result as &$r) {
+            $key = sprintf('%d-%02d', $r['year'], $r['month']);
+            if (isset($map[$key])) {
+                $r['value'] = $map[$key];
+            }
+        }
+    } catch (PDOException $e) {
+        // Leave values null – caller will show empty state
+    }
+    return $result;
+}
+
+/**
+ * For the given indicator, fetch each department's value for the current month.
+ * Returns an array of ['dept_name' => string, 'value' => float|null].
+ */
+function getDeptComparisonCurrentMonth($indicator_id) {
+    $pdo   = getDB();
+    $month = (int)date('n');
+    $year  = (int)date('Y');
+    try {
+        $stmt = $pdo->prepare(
+            "SELECT d.name AS dept_name, md.value
+             FROM departments d
+             LEFT JOIN monthly_data md
+               ON md.department_id = d.id
+               AND md.indicator_id = ?
+               AND md.month = ?
+               AND md.year  = ?
+             WHERE d.status = 'active'
+             ORDER BY d.name"
+        );
+        $stmt->execute([$indicator_id, $month, $year]);
+        return $stmt->fetchAll();
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+/**
+ * Count of active indicators grouped by category.
+ * Returns ['general' => int, 'department_specific' => int].
+ */
+function getIndicatorCategoryDistribution() {
+    $pdo  = getDB();
+    $dist = ['general' => 0, 'department_specific' => 0];
+    try {
+        $rows = $pdo->query(
+            "SELECT category, COUNT(*) as cnt
+             FROM indicators
+             WHERE status = 'active'
+             GROUP BY category"
+        )->fetchAll();
+        foreach ($rows as $row) {
+            $dist[$row['category']] = (int)$row['cnt'];
+        }
+    } catch (PDOException $e) { /* return zeros */ }
+    return $dist;
+}
+
+/**
+ * Count KPIs that are in breach (value > benchmark) for the given month/year.
+ * "Benchmark" is stored as a varchar; numeric prefix is parsed.
+ * Returns integer count.
+ */
+function getKpisInBreach($month, $year) {
+    $pdo = getDB();
+    try {
+        $stmt = $pdo->prepare(
+            "SELECT COUNT(*) FROM monthly_data md
+             JOIN indicators i ON md.indicator_id = i.id
+             WHERE md.month = ? AND md.year = ?
+               AND md.value IS NOT NULL
+               AND i.benchmark IS NOT NULL AND i.benchmark != ''
+               AND i.benchmark REGEXP '^[0-9]+(\\\\.[0-9]+)?$'
+               AND CAST(md.value AS DECIMAL(15,4)) > CAST(i.benchmark AS DECIMAL(15,4))"
+        );
+        $stmt->execute([$month, $year]);
+        return (int)$stmt->fetchColumn();
+    } catch (PDOException $e) {
+        return 0;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function getRoleLabel($role) {
     $labels = [
         'admin'               => 'Administrator',
