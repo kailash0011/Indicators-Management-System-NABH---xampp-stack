@@ -27,14 +27,15 @@ $totalStmt->execute($params);
 $total = $totalStmt->fetchColumn();
 $totalPages = ceil($total / $perPage);
 
+$paginatedParams = array_merge($params, [$perPage, $offset]);
 $stmt = $pdo->prepare("
     SELECT al.*, u.name as user_name
     FROM audit_log al LEFT JOIN users u ON al.user_id = u.id
     $whereSQL
     ORDER BY al.created_at DESC
-    LIMIT $perPage OFFSET $offset
+    LIMIT ? OFFSET ?
 ");
-$stmt->execute($params);
+$stmt->execute($paginatedParams);
 $logs = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
