@@ -3,6 +3,13 @@ session_start();
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/auth.php';
 
+// Redirect to the one-click installer when the database or required tables
+// have not been created yet (fresh install scenario).
+if (!isDbReady()) {
+    header('Location: ' . BASE_URL . '/setup.php');
+    exit;
+}
+
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . BASE_URL . '/dashboard.php');
     exit;
@@ -14,11 +21,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     if (empty($username) || empty($password)) {
         $error = 'Please enter username and password.';
-    } elseif (login($username, $password)) {
-        header('Location: ' . BASE_URL . '/dashboard.php');
-        exit;
     } else {
-        $error = 'Invalid username or password.';
+        try {
+            if (login($username, $password)) {
+                header('Location: ' . BASE_URL . '/dashboard.php');
+                exit;
+            } else {
+                $error = 'Invalid username or password.';
+            }
+        } catch (PDOException $e) {
+            // DB schema issue – send the user to setup instead of a raw error.
+            header('Location: ' . BASE_URL . '/setup.php');
+            exit;
+        }
     }
 }
 ?>
