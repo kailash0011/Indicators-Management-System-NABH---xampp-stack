@@ -24,6 +24,11 @@ $indicators = getDepartmentIndicators($deptId);
     </style>
 </head>
 <body class="bg-gray-100">
+<?php
+$printTitle    = 'Annual Indicator Report — ' . $selYear;
+$printSubtitle = htmlspecialchars($user['department_name'] ?? '') . ' Department';
+include __DIR__ . '/../includes/letterhead.php';
+?>
 <div class="flex h-screen overflow-hidden">
     <?php include __DIR__ . '/sidebar.php'; ?>
     <main class="flex-1 ml-64 overflow-y-auto">
@@ -40,14 +45,16 @@ $indicators = getDepartmentIndicators($deptId);
                         <?php endfor; ?>
                     </select>
                 </form>
-                <button onclick="window.print()" class="btn btn-secondary btn-sm no-print">Print</button>
+                <button onclick="window.print()" class="btn btn-secondary btn-sm no-print">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    Print
+                </button>
             </div>
         </header>
         <div class="p-6">
             <div class="bg-white rounded-xl shadow overflow-hidden print-full">
-                <div class="p-4 border-b border-gray-100 text-center print-full">
+                <div class="p-4 border-b border-gray-100 text-center print-full no-print">
                     <h2 class="font-bold text-gray-800 text-lg"><?= htmlspecialchars($user['department_name']) ?> — Annual Report <?= $selYear ?></h2>
-                    <p class="text-xs text-gray-400"><?= htmlspecialchars(HOSPITAL_NAME) ?></p>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="data-table">
@@ -88,6 +95,12 @@ $indicators = getDepartmentIndicators($deptId);
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <!-- Print footer -->
+            <div class="print-footer" style="display:none">
+                Printed on <?= date('d M Y, h:i A') ?> &nbsp;·&nbsp;
+                <?= htmlspecialchars(HOSPITAL_NAME) ?> &nbsp;·&nbsp; NABH Indicators Management System
             </div>
         </div>
     </main>

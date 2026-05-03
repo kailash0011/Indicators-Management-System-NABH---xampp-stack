@@ -21,6 +21,11 @@ $curMonth = (int)date('n');
 </head>
 <body class="bg-gray-100">
 <div id="toast-container"></div>
+<?php
+$printTitle    = 'NABH Indicator Report';
+$printSubtitle = '';
+include __DIR__ . '/../includes/letterhead.php';
+?>
 <div class="flex h-screen overflow-hidden">
     <?php include __DIR__ . '/sidebar.php'; ?>
     <main class="flex-1 ml-64 overflow-y-auto">
@@ -89,6 +94,12 @@ $curMonth = (int)date('n');
 
             <!-- Report Output -->
             <div id="reportOutput"></div>
+
+            <!-- Print footer (hidden on screen) -->
+            <div class="print-footer" style="display:none">
+                Printed on <?= date('d M Y, h:i A') ?> &nbsp;·&nbsp;
+                <?= htmlspecialchars(HOSPITAL_NAME) ?> &nbsp;·&nbsp; NABH Indicators Management System
+            </div>
         </div>
     </main>
 </div>
@@ -144,6 +155,16 @@ function generateReport() {
 function renderReport(groups, year, mFrom, mTo) {
     const mRange = [];
     for (let m = parseInt(mFrom); m <= parseInt(mTo); m++) mRange.push(m);
+
+    // Update letterhead subtitle dynamically based on current filter selection
+    const deptEl = document.getElementById('rDept');
+    const deptLabel = deptEl.options[deptEl.selectedIndex].text;
+    const subtitle = (deptEl.value ? deptEl.options[deptEl.selectedIndex].text + ' — ' : 'All Departments — ') +
+                     MONTHS[parseInt(mFrom)] + (mFrom !== mTo ? ' to ' + MONTHS[parseInt(mTo)] : '') + ' ' + year;
+    const subEl = document.querySelector('.letterhead-subtitle-text');
+    if (subEl) subEl.textContent = subtitle;
+    const titleEl = document.querySelector('.letterhead-title-text');
+    if (titleEl) titleEl.textContent = 'NABH Indicator Report — ' + year;
 
     // Overall counters
     let totalMet = 0, totalNotMet = 0;

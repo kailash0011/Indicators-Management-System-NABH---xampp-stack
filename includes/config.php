@@ -4,10 +4,13 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'nabh_indicators');
 define('DB_SOCKET', '/home/runner/mysql_run/mysql.sock');
-define('HOSPITAL_NAME', 'City General Hospital');
-define('HOSPITAL_ADDRESS', '123 Healthcare Avenue, Medical District');
-define('HOSPITAL_PHONE', '+91-0000-000000');
+define('HOSPITAL_NAME',          'Charak Memorial Hospital Pvt. Ltd.');
+define('HOSPITAL_NAME_NEPALI',   'चरक मेमोरियल हस्पिटल प्रा.लि.');
+define('HOSPITAL_ADDRESS',       'Nagardhung, Pokhara-8, Gandaki Province, Nepal');
+define('HOSPITAL_ADDRESS_NEPALI','नागढुङ्गा, पोखरा-८');
+define('HOSPITAL_PHONE',         '+977-61-XXXXXX');
 define('HOSPITAL_ACCREDITATION', 'NABH Accredited Hospital');
+define('HOSPITAL_LOGO',          '/assets/images/hospital_logo.webp');
 define('BASE_URL', '');
 
 function getDB() {

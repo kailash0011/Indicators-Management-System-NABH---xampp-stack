@@ -12,24 +12,28 @@ A web-based quality indicators management system for NABH-accredited hospitals, 
 
 ```
 nabh/
-├── admin/          — Admin panel pages (departments, users, indicators, reports, audit)
-├── ajax/           — JSON API endpoints
-├── assets/css/     — CSS styles
-├── incharge/       — Department in-charge pages
+├── admin/              — Admin panel pages (departments, users, indicators, reports, audit, notifications)
+├── ajax/               — JSON API endpoints
+├── assets/
+│   ├── css/style.css   — Global styles (includes print/letterhead CSS)
+│   └── images/
+│       └── hospital_logo.webp  — Charak Memorial Hospital logo (used in letterhead)
+├── incharge/           — Department in-charge pages (data entry, history with print)
 ├── includes/
-│   ├── auth.php    — Authentication functions
-│   ├── config.php  — Database & app configuration
-│   └── functions.php
+│   ├── auth.php        — Authentication functions
+│   ├── config.php      — DB config + HOSPITAL_NAME/LOGO/ADDRESS constants
+│   ├── functions.php   — Shared helpers
+│   ├── letterhead.php  — Shared print letterhead (logo + hospital identity + report title)
+│   └── notifications.php — Compliance alert engine (runComplianceCheck, getSetting, etc.)
 ├── sql/
-│   ├── schema.sql  — Database & table DDL
-│   └── seed.sql    — Departments, indicators, and assignment seed data
-├── start.sh        — Startup script (MySQL init + seeding + PHP server)
-├── router.php      — PHP built-in server router
-├── run_setup.php   — CLI script to create default users
-├── my.cnf          — MySQL configuration file
-├── setup.php       — One-click web installer
-├── index.php       — Login page
-├── dashboard.php   — Post-login router
+│   ├── schema.sql      — Database & table DDL
+│   └── seed.sql        — Departments, indicators, and assignment seed data
+├── start.sh            — Startup script (MySQL init + seeding + PHP server)
+├── router.php          — PHP built-in server router
+├── run_setup.php       — CLI script to create default users
+├── my.cnf              — MySQL configuration file
+├── index.php           — Login page
+├── dashboard.php       — Post-login router
 └── logout.php
 ```
 
