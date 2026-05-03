@@ -8,7 +8,8 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'nabh_indicators');
-define('BASE_URL', '/nabh');
+define('DB_SOCKET', '/home/runner/mysql_run/mysql.sock');
+define('BASE_URL', '');
 
 $steps   = [];
 $success = true;
@@ -18,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_setup'])) {
     /* ── Step 1: Connect without DB to create it ── */
     try {
         $pdo = new PDO(
-            "mysql:host=" . DB_HOST . ";charset=utf8mb4",
+            "mysql:unix_socket=" . DB_SOCKET . ";charset=utf8mb4",
             DB_USER, DB_PASS,
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
         );
