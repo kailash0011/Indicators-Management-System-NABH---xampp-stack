@@ -68,18 +68,21 @@ if ($action === 'get_report') {
             $hasAnyData = !empty($rows);
             if (!$hasAnyData) continue; // Skip indicators with no data in range
 
-            $monthlyData = [];
+            $monthlyData    = [];
+            $rawMonthlyData = [];
             foreach ($rows as $row) {
                 $val = $row['value'];
-                $monthlyData[$row['month']] = $val !== null ? formatValue($val, $ind['unit']) : null;
+                $monthlyData[$row['month']]    = $val !== null ? formatValue($val, $ind['unit']) : null;
+                $rawMonthlyData[$row['month']] = $val;
             }
 
             $deptGroup['indicators'][] = [
-                'indicator_code' => $ind['indicator_code'],
-                'name'           => $ind['name'],
-                'unit'           => $ind['unit'],
-                'benchmark'      => $ind['benchmark'],
-                'monthly_data'   => $monthlyData,
+                'indicator_code'    => $ind['indicator_code'],
+                'name'              => $ind['name'],
+                'unit'              => $ind['unit'],
+                'benchmark'         => $ind['benchmark'],
+                'monthly_data'      => $monthlyData,
+                'raw_monthly_data'  => $rawMonthlyData,
             ];
         }
 
