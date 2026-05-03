@@ -1,6 +1,69 @@
 /* NABH IMS Custom Styles */
 
-/* Sidebar nav links */
+/* ── Page fade-in ── */
+body {
+    animation: pageFadeIn 0.3s ease both;
+}
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Card entrance animation ── */
+.card-animate {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.card-animate.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Stat card hover lift ── */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── Skeleton shimmer loader ── */
+.skeleton {
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 4px;
+    display: block;
+}
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+/* ── Live clock ── */
+.clock-time {
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+}
+
+/* ── Pulse dot (live indicator) ── */
+.pulse-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* ── Sidebar nav links */
 .nav-link {
     display: flex;
     align-items: center;

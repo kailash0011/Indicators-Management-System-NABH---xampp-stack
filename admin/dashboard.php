@@ -44,52 +44,53 @@ $recent = $pdo->query("
 
     <main class="flex-1 ml-64 overflow-y-auto">
         <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-            <div>
-                <h1 class="text-xl font-bold text-gray-800">Dashboard</h1>
-                <p class="text-xs text-gray-500">Welcome back, <?= htmlspecialchars($user['name']) ?></p>
+            <div class="flex items-center gap-3">
+                <span class="pulse-dot"></span>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">Dashboard</h1>
+                    <p class="text-xs text-gray-500">Welcome back, <?= htmlspecialchars($user['name']) ?></p>
+                </div>
             </div>
-            <div class="text-right">
-                <p class="text-sm text-gray-600"><?= date('l, d F Y') ?></p>
-            </div>
+            <div id="live-clock" class="text-right flex flex-col gap-0.5 text-sm text-gray-500"></div>
         </header>
 
         <div class="p-6 space-y-6">
 
             <!-- ── Summary Stats ── -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4">
+                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4 stat-card">
                     <div class="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-800"><?= $stats['departments'] ?></p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-depts">0</p>
                         <p class="text-xs text-gray-500">Departments</p>
                     </div>
                 </div>
-                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4">
+                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4 stat-card">
                     <div class="w-11 h-11 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-800"><?= $stats['indicators'] ?></p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-indicators">0</p>
                         <p class="text-xs text-gray-500">Active Indicators</p>
                     </div>
                 </div>
-                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4">
+                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4 stat-card">
                     <div class="w-11 h-11 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-800" id="stat-met">—</p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-met">0</p>
                         <p class="text-xs text-gray-500">Met Target</p>
                     </div>
                 </div>
-                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4">
+                <div class="bg-white rounded-xl shadow p-5 flex items-center gap-4 stat-card">
                     <div class="w-11 h-11 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-800" id="stat-notmet">—</p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-notmet">0</p>
                         <p class="text-xs text-gray-500">Not Met Target</p>
                     </div>
                 </div>
@@ -126,7 +127,9 @@ $recent = $pdo->query("
                 <!-- Donut: Met vs Not Met -->
                 <div class="bg-white rounded-xl shadow p-5 flex flex-col">
                     <h2 class="font-semibold text-gray-800 mb-1">Target Achievement</h2>
-                    <p class="text-xs text-gray-400 mb-4" id="donut-subtitle">Loading…</p>
+                    <p class="text-xs text-gray-400 mb-4" id="donut-subtitle">
+                        <span class="skeleton h-3 rounded w-32 inline-block"></span>
+                    </p>
                     <div class="flex-1 flex items-center justify-center" style="min-height:200px">
                         <canvas id="chartDonut"></canvas>
                     </div>
@@ -139,7 +142,9 @@ $recent = $pdo->query("
                 <!-- Bar: Dept Compliance -->
                 <div class="bg-white rounded-xl shadow p-5 lg:col-span-2 flex flex-col">
                     <h2 class="font-semibold text-gray-800 mb-1">Department-wise Compliance %</h2>
-                    <p class="text-xs text-gray-400 mb-4" id="bar-subtitle">Loading…</p>
+                    <p class="text-xs text-gray-400 mb-4" id="bar-subtitle">
+                        <span class="skeleton h-3 rounded w-48 inline-block"></span>
+                    </p>
                     <div class="flex-1" style="min-height:200px">
                         <canvas id="chartBar"></canvas>
                     </div>
@@ -345,9 +350,9 @@ function fetchMonthlyStatus(month, year) {
             if (!d.success) return;
             const data = d.data;
 
-            // Summary stats
-            document.getElementById('stat-met').textContent    = data.met_count;
-            document.getElementById('stat-notmet').textContent = data.not_met_count;
+            // Summary stats with animated counters
+            animateCounter(document.getElementById('stat-met'),    data.met_count,     700);
+            animateCounter(document.getElementById('stat-notmet'), data.not_met_count, 700);
 
             // Donut chart
             chartDonut.data.datasets[0].data = [data.met_count, data.not_met_count];
@@ -444,9 +449,23 @@ function esc(s) {
 
 /* ── Boot ── */
 document.addEventListener('DOMContentLoaded', () => {
+    // Animate the fixed stats on load
+    animateCounter(document.getElementById('stat-depts'),      <?= $stats['departments'] ?>, 900);
+    animateCounter(document.getElementById('stat-indicators'), <?= $stats['indicators'] ?>, 900);
+
+    // Start live clock
+    startClock('live-clock');
+
     initCharts();
     loadAll();
+
+    // Auto-refresh every 5 minutes
+    setInterval(() => {
+        loadAll();
+    }, 5 * 60 * 1000);
 });
 </script>
+<script>window.APP_BASE='<?= BASE_URL ?>';</script>
+<script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 </body>
 </html>

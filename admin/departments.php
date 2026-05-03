@@ -196,16 +196,9 @@ document.getElementById('deptForm').addEventListener('submit', function(e) {
     });
 });
 
-function showToast(msg, type='info') {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.textContent = msg;
-    c.appendChild(t);
-    setTimeout(() => { t.style.animation='fadeOut 0.3s forwards'; setTimeout(()=>t.remove(),300); }, 3000);
-}
-
 loadDepartments();
 </script>
+<script>window.APP_BASE='<?= BASE_URL ?>';</script>
+<script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 </body>
 </html>

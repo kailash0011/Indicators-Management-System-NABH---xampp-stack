@@ -154,5 +154,7 @@ function showToast(msg, type='info') {
     setTimeout(() => { t.style.animation='fadeOut 0.3s forwards'; setTimeout(()=>t.remove(),300); }, 3000);
 }
 </script>
+<script>window.APP_BASE='<?= BASE_URL ?>';</script>
+<script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 </body>
 </html>
