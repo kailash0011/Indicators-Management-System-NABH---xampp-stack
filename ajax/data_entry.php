@@ -3,6 +3,7 @@ session_start();
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/notifications.php';
 requireLogin();
 header('Content-Type: application/json');
 
@@ -89,6 +90,8 @@ if ($action === 'save') {
 
     if ($saved > 0) {
         logAudit('save_monthly_data','monthly_data',$deptId,null,"month=$month,year=$year,count=$saved");
+        // Run compliance check silently so alerts stay current
+        try { runComplianceCheck($month, $year); } catch (Exception $e) { /* non-fatal */ }
     }
 
     if ($saved > 0) {

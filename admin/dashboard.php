@@ -5,10 +5,14 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
 requireRole(['admin','quality_officer']);
 
+require_once __DIR__ . '/../includes/notifications.php';
 $stats   = getDashboardStats();
 $pdo     = getDB();
 $user    = getCurrentUser();
 $curPage = 'dashboard';
+
+// Auto-run compliance check for current month silently on each dashboard load
+try { runComplianceCheck((int)date('n'), (int)date('Y')); } catch (Exception $e) { /* non-fatal */ }
 
 $curMonth = (int)date('n');
 $curYear  = (int)date('Y');
